@@ -17,9 +17,9 @@ class GroupStatus(BaseModel):
 class Group(BaseModel):
     """Сущность Учебная группа колледжа"""
     name = CharField(unique=True, null=False)
-    # Ограничение >= 2000
+    # Ограничение >= 2000 
     formation_year = IntegerField(null=False, constraints=[Check('formation_year >= 2000')])
-    # Ограничение 9 или 11 класс
+    # Ограничение 9 или 11 класс 
     education_base = IntegerField(null=False, constraints=[Check('education_base IN (9, 11)')])
     # Статус по умолчанию 1 (Активна)
     status = ForeignKeyField(GroupStatus, backref='groups', null=False, default=1)
