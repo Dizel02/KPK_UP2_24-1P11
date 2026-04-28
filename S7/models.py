@@ -15,11 +15,14 @@ class GroupStatus(BaseModel):
         table_name = 'statusgroup'
 
 class Group(BaseModel):
-    """Сущность Учебная группа"""
+    """Сущность Учебная группа колледжа"""
     name = CharField(unique=True, null=False)
-    formation_year = IntegerField(null=False)
-    education_base = IntegerField(null=False)  # 9 или 11 класс
-    status = ForeignKeyField(GroupStatus, backref='groups', null=False)
+    # Ограничение >= 2000
+    formation_year = IntegerField(null=False, constraints=[Check('formation_year >= 2000')])
+    # Ограничение 9 или 11 класс
+    education_base = IntegerField(null=False, constraints=[Check('education_base IN (9, 11)')])
+    # Статус по умолчанию 1 (Активна)
+    status = ForeignKeyField(GroupStatus, backref='groups', null=False, default=1)
     curator_id = IntegerField(null=False)      # Внешний ID
 
     class Meta:
@@ -28,13 +31,12 @@ class Group(BaseModel):
 def init_db():
     """Функция инициализации базы данных"""
     db.connect()
-    # safe=True не выдаст ошибку, если таблицы уже есть
     db.create_tables([GroupStatus, Group], safe=True)
-    
-    # Заполнение справочника статусов, если он пуст
+
+    # Заполнение справочника, если он пуст
     if GroupStatus.select().count() == 0:
-        GroupStatus.create(title="Активна")
-        GroupStatus.create(title="Выпустилась")
+        GroupStatus.create(title="Активна")      # ID 1
+        GroupStatus.create(title="Выпустилась")  # ID 2
 
 if __name__ == "__main__":
     init_db()
