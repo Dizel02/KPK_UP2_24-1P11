@@ -1,18 +1,22 @@
 name: "Auto Assign Reviewers"
 on:
-  pull_request:
-    types: [opened, ready_for_review]
+  pull_request_target:
+    types: [opened, ready_for_review, synchronize]
+
+permissions:
+  pull-requests: write
 
 jobs:
   assign:
     runs-on: ubuntu-latest
     steps:
-      - uses: wow-actions/auto-assign@v3
-        with:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          # Список всех возможных ревьюверов
-          reviewers: |
-            Bormerd
-            VeraMol06
-            YuriSilenok
-          numberOfReviewers: 1
+      - name: Request reviewers
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          REPO: ${{ github.repository }}
+        run: |
+          # Запрашиваем ревью у обоих пользователей
+          gh pr edit $PR_NUMBER --add-reviewer Bormerd --repo $REPO
+          gh pr edit $PR_NUMBER --add-reviewer VeraMol06 --repo $REPO
+          gh pr edit $PR_NUMBER --add-reviewer YuriSilenok --repo $REPO
