@@ -29,7 +29,7 @@ class Discipline(BaseModel):
 
     id = IntegerField(primary_key=True)
     name = CharField(max_length=255, unique=True, null=False)
-    specialty_id = CharField(unique=True, null=False)
+    specialty_id = IntegerField(unique=True, null=False)
 
     class Meta:
         table_name = "discipline"
